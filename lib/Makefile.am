@@ -23,6 +23,7 @@ libdict_la_SOURCES =							\
 libdict_la_CFLAGS =								\
 	-I$(top_srcdir)								\
 	$(LIBXFCE4UI_CFLAGS)						\
+	$(WEBKIT_CFLAGS)							\
 	$(LIBXFCE4PANEL_CFLAGS)						\
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"		\
 	@GTHREAD_CFLAGS@
@@ -30,6 +31,7 @@ libdict_la_CFLAGS =								\
 libdict_la_LIBADD =								\
 	$(LIBXFCE4PANEL_LIBS)						\
 	$(LIBXFCE4UI_LIBS)							\
+	$(WEBKIT_LIBS)								\
 	@GTHREAD_LIBS@
 
 DISTCLEANFILES =								\

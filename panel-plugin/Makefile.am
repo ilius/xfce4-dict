@@ -9,6 +9,7 @@ libxfce4dict_la_SOURCES =						\
 libxfce4dict_la_CFLAGS =						\
 	-I$(top_srcdir)								\
 	-I$(top_srcdir)/lib							\
+	$(WEBKIT_CFLAGS)							\
 	$(LIBXFCE4UI_CFLAGS)						\
 	$(LIBXFCE4PANEL_CFLAGS)						\
 	-DG_LOG_DOMAIN=\"xfce4-dict-plugin\"		\
@@ -23,6 +24,7 @@ libxfce4dict_la_LDFLAGS = \
 	$(PLATFORM_LDFLAGS)
 
 libxfce4dict_la_LIBADD =						\
+	$(WEBKIT_LIBS)								\
 	$(LIBXFCE4PANEL_LIBS)						\
 	$(LIBXFCE4UI_LIBS)							\
 	@GTHREAD_LIBS@								\

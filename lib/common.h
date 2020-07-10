@@ -19,7 +19,6 @@
 #ifndef COMMON_H
 #define COMMON_H 1
 
-
 /* Returns: TRUE if ptr points to a non-zero value. */
 #define NZV(ptr) \
 	((ptr) && (ptr)[0])
@@ -31,6 +30,7 @@
 #define DICT_FLAGS_MODE_SPELL			8
 
 #define XFCE_DICT_SELECTION	"XFCE_DICT_SEL"
+
 
 
 typedef enum
@@ -59,6 +59,8 @@ enum
 #define TAG_LINK "link"
 #define TAG_BOLD "bold"
 #define TAG_PHONETIC "phonetic"
+
+#include <webkit2/webkit2.h>
 
 typedef struct
 {
@@ -100,8 +102,8 @@ typedef struct
 	GtkWidget *main_entry;
 	GtkWidget *radio_button_web;
 	GtkWidget *panel_entry;
-	GtkWidget *main_textview;
-	GtkTextBuffer *main_textbuffer;
+	WebKitWebView *webview;
+
 	GtkTextIter textiter;
 	GtkTextTag *link_tag;
 	GtkTextTag *phon_tag;

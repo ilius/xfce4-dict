@@ -142,58 +142,8 @@ static gchar *phon_find_start(gchar *buf, gchar **start_str, gchar **end_str)
 }
 
 
-/* We parse the first line differently as there are usually no links
- * but instead phonetic information */
-static void parse_header(DictData *dd, GString *buffer, GString *target)
-{
-	gchar *start;
-	gchar *end;
-	gsize len;
-	gchar end_char;
-	gchar *start_str = "";
-	gchar *end_str = "";
 
-	while (buffer->len > 0)
-	{
-		start = phon_find_start(buffer->str, &start_str, &end_str);
-		end_char = *end_str;
-		len = 0;
-
-		if (start == NULL)
-		{
-			/* no phonetics at all, so add the text to the body to get at least possible
-			 * links parsed and return */
-			g_string_prepend(target, buffer->str);
-			g_string_erase(buffer, 0, -1); /* remove already handled text */
-			return;
-		}
-		/* get length of text *before* the end char */
-		while (len < buffer->len && (buffer->str + len) != start)
-			len++;
-
-		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, buffer->str, len);
-		len++; /* skip the end char */
-		g_string_erase(buffer, 0, len); /* remove already handled text */
-
-		start = buffer->str; /* set new start */
-		end = strchr(start, end_char);
-		if (start > end)
-		{
-			/* start & end chars don't match, skip this part */
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, start_str, 1);
-			continue;
-		}
-		len = end - buffer->str; /* length of the phonetic string */
-
-		gtk_text_buffer_insert_with_tags_by_name(dd->main_textbuffer, &dd->textiter,
-				buffer->str, len, TAG_PHONETIC, NULL);
-
-		g_string_erase(buffer, 0, len + 1); /* remove already handled text */
-	}
-}
-
-
-static GtkTextTag *create_tag(DictData *dd, const gchar *link_str)
+/*static GtkTextTag *create_tag(DictData *dd, const gchar *link_str)
 {
 	GtkTextTag *tag;
 
@@ -204,7 +154,7 @@ static GtkTextTag *create_tag(DictData *dd, const gchar *link_str)
 	g_object_set_data_full(G_OBJECT(tag), TAG_LINK, g_strdup(link_str), g_free);
 
 	return tag;
-}
+}*/
 
 
 /* ignore links like {n} or {f} as they are often found in translation dictionaries and
@@ -229,64 +179,7 @@ static gboolean ignore_short_link(const gchar *str)
 }
 
 
-/* Find any cross-references like {reference} and make them clickable */
-static void parse_body(DictData *dd, GString *buffer)
-{
-	gchar *start;
-	gchar *end;
-	gsize len;
-	GtkTextTag *tag;
-	gchar *found_link;
-
-	while (buffer->len > 0)
-	{
-		start = strchr(buffer->str, '{');
-		len = 0;
-
-		if (start == NULL)
-		{	/* no links at all, so add the text and go */
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, buffer->str, buffer->len);
-			return;
-		}
-		/* get length of text *before* the next '{' */
-		while (len < buffer->len && (buffer->str + len) != start)
-			len++;
-
-		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, buffer->str, len);
-		len++; /* skip the '{' */
-		g_string_erase(buffer, 0, len); /* remove already handled text */
-
-		start = buffer->str; /* set new start */
-		end = strchr(start, '}');
-		if (start > end)
-		{
-			/* braces don't match, skip this part, e.g. 'fd-deu-eng' returns
-			 * '    frozen}; to be cold; to freeze {froze' */
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "{", 1);
-			continue;
-		}
-		len = end - buffer->str; /* length of the link */
-		found_link = g_strndup(buffer->str, len);
-
-		/* ignore {n}, {f}, ... */
-		if (ignore_short_link(found_link))
-		{
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "{", 1);
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, buffer->str, len);
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "}", 1);
-		}
-		else
-		{
-			tag = create_tag(dd, found_link);
-			gtk_text_buffer_insert_with_tags(dd->main_textbuffer, &dd->textiter,
-				buffer->str, len, tag, NULL);
-		}
-		g_free(found_link);
-		g_string_erase(buffer, 0, len + 1); /* remove already handled text */
-	}
-}
-
-
+/*
 static gint process_response_content(DictData *dd, gchar **lines, gint line_no, gint max_lines,
 									 GString *header, GString *body)
 {
@@ -295,16 +188,16 @@ static gint process_response_content(DictData *dd, gchar **lines, gint line_no, 
 
 	line_no++;
 	if (strncmp(lines[line_no], "250", 3) == 0)
-		return max_lines; /* end of data */
-	if (strncmp(lines[line_no], "error:", 6) == 0) /* an error occurred */
+		return max_lines; // end of data
+	if (strncmp(lines[line_no], "error:", 6) == 0) // an error occurred
 	{
 		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, lines[line_no], -1);
 		return max_lines;
 	}
 	if (strncmp(lines[line_no], "151", 3) != 0)
-		return line_no; /* unexpected line start, try next line */
+		return line_no; // unexpected line start, try next line
 
-	/* get the used dictionary */
+	// get the used dictionary
 	dict_parts = g_strsplit(lines[line_no], "\"", -1);
 
 	if (g_strv_length(dict_parts) > 3)
@@ -321,22 +214,22 @@ static gint process_response_content(DictData *dd, gchar **lines, gint line_no, 
 	if (line_no >= (max_lines - 2))
 		return max_lines;
 
-	/* all following lines represents the translation */
+	// all following lines represents the translation
 	line_no++;
 	is_header = TRUE;
 
 	while (lines[line_no] != NULL && lines[line_no][0] != '\r' && lines[line_no][0] != '\n')
 	{
-		/* check for a leading period indicating end of text response */
+		// check for a leading period indicating end of text response
 		if (lines[line_no][0] == '.')
 		{
-			/* a double period at line start is a masked period, cf. RFC 2229 */
+			// a double period at line start is a masked period, cf. RFC 222
 			if (strlen(lines[line_no]) > 1 && lines[line_no][1] == '.')
-				/* the RFC says we should coolapse the two periods into one but we go the
-				 * lazy way and simply replace the first period by a space */
+				// the RFC says we should coolapse the two periods into one but we go the
+				// lazy way and simply replace the first period by a space
 				lines[line_no][0] = ' ';
 			else
-				break; /* we reached the end of the test response */
+				break; // we reached the end of the test response
 		}
 		if (is_header && lines[line_no][0] != ' ')
 		{
@@ -352,14 +245,15 @@ static gint process_response_content(DictData *dd, gchar **lines, gint line_no, 
 
 		line_no++;
 	}
-	parse_header(dd, header, body);
-	parse_body(dd, body);
-	gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n\n", 2);
+	//parse_header(dd, header, body);
+	//parse_body(dd, body);
+	//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n\n", 2);
 	g_string_erase(header, 0, -1);
 	g_string_erase(body, 0, -1);
 
 	return line_no;
-}
+}*/
+
 
 
 static void clear_query_buffer(DictData *dd)
@@ -367,6 +261,7 @@ static void clear_query_buffer(DictData *dd)
 	g_free(dd->query_buffer);
 	dd->query_buffer = NULL;
 }
+
 
 
 static void append_web_search_link(DictData *dd, gboolean prepend_whitespace)
@@ -381,6 +276,8 @@ static void append_web_search_link(DictData *dd, gboolean prepend_whitespace)
 		_("Search \"%s\" using \"%s\""),
 		dd->searched_word, label);
 
+	/*
+	// FIXME: disabled for migration to webkit2gtk
 	if (prepend_whitespace)
 		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n\n", 2);
 
@@ -390,6 +287,7 @@ static void append_web_search_link(DictData *dd, gboolean prepend_whitespace)
 	gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 	gtk_text_buffer_insert_with_tags_by_name(dd->main_textbuffer, &dd->textiter,
 		text, -1, TAG_LINK, NULL);
+	*/
 	g_free(text);
 }
 
@@ -441,15 +339,11 @@ static gboolean process_server_response(DictData *dd)
 
 	if (dd->query_status == NOTHING_FOUND)
 	{
-		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
-		gtk_text_buffer_insert_with_tags_by_name(dd->main_textbuffer, &dd->textiter,
-			_("Dictionary Results:"), -1, TAG_HEADING, NULL);
-
-		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 		tmp = g_strdup_printf(_("No matches could be found for \"%s\"."), dd->searched_word);
-		gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, tmp, -1);
-		dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, dd->searched_word, &dd->textiter,
-			TAG_ERROR, TAG_BOLD, NULL);
+		webkit_web_view_load_plain_text(dd->webview, tmp);
+
+		//dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, dd->searched_word, &dd->textiter,
+		//	TAG_ERROR, TAG_BOLD, NULL);
 		dict_gui_status_add(dd, "%s", tmp);
 		g_free(tmp);
 		clear_query_buffer(dd);
@@ -460,7 +354,7 @@ static gboolean process_server_response(DictData *dd)
 
 		if (NZV(dd->spell_bin))
 		{
-			gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
+			// gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 			dict_spell_start_query(dd, dd->searched_word, FALSE);
 		}
 
@@ -482,7 +376,8 @@ static gboolean process_server_response(DictData *dd)
 		answer++;
 	answer++;
 
-	/* parse output */
+	/*
+	// parse output
 	lines = g_strsplit(answer, "\r\n", -1);
 	max_lines = g_strv_length(lines);
 	if (lines == NULL || max_lines == 0)
@@ -499,6 +394,22 @@ static gboolean process_server_response(DictData *dd)
 	{
 		i = process_response_content(dd, lines, i, max_lines, header, body);
 	}
+	*/
+
+	char* body2 = strchr(answer, '\n');
+	body2 ++;
+
+	size_t len = strlen(body2);
+    if (len >= 3 && strncmp(body2 + len - 3, "250", 3) == 0) {
+		body2[len-4] = '\0';
+		len -= 4;
+    }
+    if (len >= 2 && body2[len-2] == '.') {
+		body2[len-2] = '\0';
+    }
+
+	webkit_web_view_load_html(dd->webview, body2, NULL);
+	//webkit_web_view_load_plain_text(dd->webview, body2);
 
 	append_web_search_link (dd, FALSE);
 

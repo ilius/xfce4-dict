@@ -12,15 +12,18 @@ xfce4_dict_CFLAGS =								\
 	-I$(top_srcdir)/lib							\
 	$(LIBXFCE4UTIL_CFLAGS)						\
 	$(GTK_CFLAGS)								\
+	$(WEBKIT_CFLAGS)							\
 	$(PLATFORM_CFLAGS)
 
 xfce4_dict_LDADD =								\
 	$(GTK_LIBS)									\
+	$(WEBKIT_LIBS)								\
 	$(LIBXFCE4UTIL_LIBS)						\
 	$(LIBXFCEGUI4_LIBS)							\
 	@GTHREAD_LIBS@								\
 	@X11_LIBS@								\
 	$(top_builddir)/lib/libdict.la
+
 
 
 desktopdir = $(datadir)/applications

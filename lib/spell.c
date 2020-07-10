@@ -68,9 +68,9 @@ static void print_header(iodata *iod)
 {
 	if (! iod->header_printed)
 	{
-		gtk_text_buffer_insert(iod->dd->main_textbuffer, &iod->dd->textiter, "\n", 1);
-		gtk_text_buffer_insert_with_tags_by_name(iod->dd->main_textbuffer, &iod->dd->textiter,
-			_("Spell Checker Results:"), -1, TAG_HEADING, NULL);
+		//gtk_text_buffer_insert(iod->dd->main_textbuffer, &iod->dd->textiter, "\n", 1);
+		//gtk_text_buffer_insert_with_tags_by_name(iod->dd->main_textbuffer, &iod->dd->textiter,
+		//	_("Spell Checker Results:"), -1, TAG_HEADING, NULL);
 
 		iod->header_printed = TRUE;
 	}
@@ -99,41 +99,41 @@ static gboolean iofunc_read(GIOChannel *ioc, GIOCondition cond, gpointer data)
 					dict_gui_status_add(dd, ngettext("%d suggestion found.",
 													 "%d suggestions found.",
 													 count), count);
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n\n", 2);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n\n", 2);
 				tmp = g_strdup_printf(_("Suggestions for \"%s\" (%s):"),
 					iod->word, dd->spell_dictionary);
-				gtk_text_buffer_insert_with_tags_by_name(
-					dd->main_textbuffer, &dd->textiter, tmp, -1, TAG_BOLD, NULL);
-				dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
-					TAG_ERROR, TAG_BOLD, NULL);
+				//gtk_text_buffer_insert_with_tags_by_name(
+				//	dd->main_textbuffer, &dd->textiter, tmp, -1, TAG_BOLD, NULL);
+				//dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
+				//	TAG_ERROR, TAG_BOLD, NULL);
 				g_free(tmp);
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 
 				tmp = strchr(msg, ':') + 2;
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, g_strchomp(tmp), -1);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, g_strchomp(tmp), -1);
 			}
 			else if (msg[0] == '*' && ! iod->quiet)
 			{
 				print_header(iod);
 
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 				tmp = g_strdup_printf(_("\"%s\" is spelled correctly (%s)."),
 					iod->word, dd->spell_dictionary);
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, tmp, -1);
-				dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
-					TAG_SUCCESS, TAG_BOLD, NULL);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, tmp, -1);
+				//dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
+				//	TAG_SUCCESS, TAG_BOLD, NULL);
 				g_free(tmp);
 			}
 			else if (msg[0] == '#' && ! iod->quiet)
 			{
 				print_header(iod);
 
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, "\n", 1);
 				tmp = g_strdup_printf(_("No suggestions could be found for \"%s\" (%s)."),
 					iod->word, dd->spell_dictionary);
-				gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, tmp, -1);
-				dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
-					TAG_ERROR, TAG_BOLD, NULL);
+				//gtk_text_buffer_insert(dd->main_textbuffer, &dd->textiter, tmp, -1);
+				//dict_gui_textview_apply_tag_to_word(dd->main_textbuffer, iod->word, &dd->textiter,
+				//	TAG_ERROR, TAG_BOLD, NULL);
 				g_free(tmp);
 			}
 			g_free(msg);
