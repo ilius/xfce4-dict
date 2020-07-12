@@ -825,6 +825,8 @@ void dict_gui_create_main_window(DictData *dd)
 	gtk_widget_show(sep);
 	gtk_box_pack_start(GTK_BOX(entry_box), sep, FALSE, FALSE, 2);
 
+	// TODO: add preferences option to show/hide this button
+	/*
 	button = gtk_button_new_with_mnemonic(_("Speed _Reader"));
 	gtk_button_set_image(GTK_BUTTON(button),
 		gtk_image_new_from_icon_name("format-justify-center", GTK_ICON_SIZE_MENU));
@@ -835,6 +837,7 @@ void dict_gui_create_main_window(DictData *dd)
 	sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	gtk_widget_show(sep);
 	gtk_box_pack_start(GTK_BOX(entry_box), sep, FALSE, FALSE, 2);
+	*/
 
 	dd->close_button = gtk_button_new_with_mnemonic ((dd->is_plugin) ?
 		_("_Close") : _("_Quit"));
